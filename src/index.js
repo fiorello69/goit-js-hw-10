@@ -1,86 +1,69 @@
-import Notiflix from 'notiflix';
-import SlimSelect from 'slim-select';
 import axios from 'axios';
+import SlimSelect from 'slim-select';
 
 axios.defaults.headers.common['x-api-key'] =
   'live_GZbn1fiXEF4OrTTw3HMMHjz6yAdh9XOudhFQZOjRNIfxeQvuKY9F2BoUQ9swCOr8';
 
-const breedSelect = new SlimSelect({
-  select: '#breedSelect',
-  placeholder: 'Select a breed',
-});
+document.addEventListener('DOMContentLoaded', function () {
+  const breedSelect = new SlimSelect({
+    select: '#breed-select',
+    placeholder: 'Select a breed',
+    allowDeselect: true,
+    alwaysOn: false,
+    onChange: info => {
+      fetchCatByBreed(info.value);
+    },
+  });
 
-const loaderContainer = document.querySelector('.loader-container');
-const catInfoContainer = document.querySelector('.cat-info');
+  const loader = document.querySelector('.loader');
+  const error = document.querySelector('.error');
+  const catInfo = document.querySelector('.cat-info');
 
-function showLoader() {
-  loaderContainer.style.display = 'block';
-}
+  function fetchBreeds() {
+    return axios
+      .get('https://api.thecatapi.com/v1/breeds')
+      .then(response => response.data)
+      .catch(handleError);
+  }
 
-function hideLoader() {
-  loaderContainer.style.display = 'none';
-}
+  function fetchCatByBreed(breedId) {
+    loader.style.display = 'block';
+    catInfo.style.display = 'none';
 
-function handleError(error) {
-  console.error(error);
-  Notiflix.Report.Failure(
-    'Oops! Something went wrong!',
-    'Try reloading the page!',
-    'Reload',
-    () => location.reload()
-  );
-  hideLoader();
-}
-
-function fetchBreeds() {
-  return axios
-    .get('https://api.thecatapi.com/v1/breeds')
-    .then(response => {
-      const breeds = response.data;
-
-      breeds.forEach(breed => {
-        breedSelect.addData({
-          text: breed.name,
-          value: breed.id,
-        });
+    axios
+      .get(`https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`)
+      .then(response => {
+        const catData = response.data[0];
+        displayCatInfo(catData);
+      })
+      .catch(handleError)
+      .finally(() => {
+        loader.style.display = 'none';
       });
+  }
 
-      hideLoader();
-    })
-    .catch(error => {
-      handleError(error);
-    });
-}
+  function displayCatInfo(catData) {
+    const { name, description, temperament } = catData.breeds[0];
 
-function fetchCatByBreed(breedId) {
-  return axios
-    .get(`https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`)
-    .then(response => {
-      const catData = response.data[0];
-      const catBreed = catData.breeds[0];
+    catInfo.innerHTML = `
+      <img src="${catData.url}" alt="${name}" />
+      <h2>${name}</h2>
+      <p><strong>Description:</strong> ${description}</p>
+      <p><strong>Temperament:</strong> ${temperament}</p>
+    `;
 
-      const catInfoHTML = `
-        <img src="${catData.url}" alt="Cat Image">
-        <h3>${catBreed.name}</h3>
-        <p>Description: ${catBreed.description}</p>
-        <p>Temperament: ${catBreed.temperament}</p>
-      `;
+    catInfo.style.display = 'block';
+  }
 
-      catInfoContainer.innerHTML = catInfoHTML;
-      hideLoader();
-    })
-    .catch(error => {
-      handleError(error);
-    });
-}
+  function handleError(error) {
+    console.error(error);
+    error.style.display = 'block';
+  }
 
-// Event listener pentru schimbarea rasei în selector
-breedSelect.slim.on('change', () => {
-  const selectedBreedId = breedSelect.selected();
-  showLoader();
-  fetchCatByBreed(selectedBreedId);
+  // Load cat breeds when the page is loaded
+  fetchBreeds().then(breeds => {
+    breedSelect.setData(
+      breeds.map(breed => ({ text: breed.name, value: breed.id }))
+    );
+  });
 });
-
-// La încărcarea paginii, inițializăm lista de rase
-showLoader();
-fetchBreeds();
