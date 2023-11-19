@@ -1,0 +1,141 @@
+
+
+.loader {
+  transform: rotateZ(45deg);
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: 1s spin linear infinite;
+}
+
+.loader:after {
+  color: #FF3D00;
+  transform: rotateY(70deg);
+  animation-delay: 0.4s;
+}
+
+/* Loader container styles */
+.loader-container {
+  display: none;
+}
+
+/* Common styles for loader, text, and container */
+.common-style {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: center;
+}
+
+.show-loader-container .loader-container {
+  display: flex;
+}
+
+
+.ss-main {
+  width: 20% !important;
+}
+
+@keyframes rotate {
+  0% {
+    transform: translate(-50%, -50%) rotateZ(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotateZ(360deg);
+  }
+}
+
+@keyframes rotateccw {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+/* Keyframes for spinner effect */
+@keyframes spin {
+
+  0%,
+  100% {
+    box-shadow: 0.2em 0px 0 0px currentcolor;
+  }
+
+  12% {
+    box-shadow: 0.2em 0.2em 0 0 currentcolor;
+  }
+
+  25% {
+    box-shadow: 0 0.2em 0 0px currentcolor;
+  }
+
+  37% {
+    box-shadow: -0.2em 0.2em 0 0 currentcolor;
+  }
+
+  50% {
+    box-shadow: -0.2em 0 0 0 currentcolor;
+  }
+
+  62% {
+    box-shadow: -0.2em -0.2em 0 0 currentcolor;
+  }
+
+  75% {
+    box-shadow: 0px -0.2em 0 0 currentcolor;
+  }
+
+  87% {
+    box-shadow: 0.2em -0.2em 0 0 currentcolor;
+  }
+}
+
+.error {
+  display: none;
+}
+
+.show-error {
+  display: block;
+}
+
+
+.cat-card {
+  display: flex;
+}
+
+
+.cat-image {
+  max-width: 50%;
+  height: auto;
+}
+
+
+.cat-details {
+  padding: 30px;
+  margin-left: 10px;
+  box-sizing: border-box;
+  background: #FFEFBA;
+  /* fallback for old browsers */
+  background: -webkit-radial-gradient(circle, #FFFFFF, #FFEFBA, #f2f2df, #f2e0ac);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: radial-gradient(circle, #FFFFFF, #FFEFBA, #f2f2df, #f2e0ac);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
